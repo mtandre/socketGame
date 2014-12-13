@@ -1,37 +1,121 @@
 <!doctype html>
 <html>
   <head>
-    <title>Socket.IO chat</title>
-    <script src="/socket.io/socket.io.js"></script>
-    <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
-    <script>
-      var socket = io();
-      $(document).ready(function(){
-        $('button').on('click', function(){
-          socket.emit('chat message', $('#m').val());
-          $('#m').val('');
-          return false;
-         });
-       });
-       socket.on('chat message', function(msg){
-         $('#messages').append($('<li>').text(msg));
-        });
-    </script>
+    <title>Socket Game</title>
+    <!-- <script src="/socket.io/socket.io.js"></script> -->
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+    <link href='http://fonts.googleapis.com/css?family=Lato:300,400,700' rel='stylesheet' type='text/css'>
     <style>
-      * { margin: 0; padding: 0; box-sizing: border-box; }
-      body { font: 13px Helvetica, Arial; }
-      .form { background: #000; padding: 3px; position: fixed; bottom: 0; width: 100%; }
-      .form input { border: 0; padding: 10px; width: 90%; margin-right: .5%; }
-      .form button { width: 9%; background: rgb(130, 224, 255); border: none; padding: 10px; }
-      #messages { list-style-type: none; margin: 0; padding: 0; }
-      #messages li { padding: 5px 10px; }
-      #messages li:nth-child(odd) { background: #eee; }
+    html, body {margin:10px 0 0 0; padding:0; background:#2C3E50; color:#ECF0F1; font-family: 'Lato', sans-serif;}
+    .container {margin:0 auto; width:96%; text-align:center;}
+    .title {font-size:3em; color:#E74C3C;}
+    .main button {display: block; border:none; outline:none; padding:15px 30px; color:#ECF0F1; font-size:2em;}
+    .main button:hover {cursor: pointer;}
+    button.top {background: #2980B9; margin: 30px auto;}
+    button.bottom {background: #3498DB; margin: 0 auto;}
+    .initial-hide {display:none;}
+    input {text-transform:capitalize; margin: 0 0 20px 0; font-size: 2em; outline: none; border: none; width: 200px; color: #2C3E50; text-align: center;}
     </style>
   </head>
   <body>
-    <ul id="messages"></ul>
-    <div class="form">  
-      <input id="m" autocomplete="off" /><button>Send</button>
+    <div class="container">
+      <h1 class="title">Welcome</h1>
+      <div class="main">
+
+        <div class="welcome">
+          <button class="top" data-route="host">New Game</button>
+          <button class="bottom" data-route="player">Join Game</button>
+        </div>
+
+        <div class="name initial-hide">
+          <input type="text" maxlength="8" id="username" placeholder="name" autocomplete="off">
+          <button class="bottom" style="display:none;" id="continue">Ready!</button>
+        </div>
+
+        <div class="lobby initial-hide">
+          <div class="message">Waiting on more players.<br>Other players: <span id="pc">0</span></div>
+          <button class="top" style="display:none;" id="start">Start Game</button>
+        </div>
+
+      </div>
     </div>
+  <script>
+    //var socket = io();
+
+    var playerID = 0;
+    var role = "";
+    var playerCount = 0;
+
+
+    $(document).ready(function(){
+      // welcome
+      $('.welcome button').on("click", function() {
+        role = $(this).data('route');
+        $('.welcome').hide();
+        $('.name').css({display: "block"});
+      });
+      // username
+      $("#username").on('keyup',function () {
+       if ($(this).val()) {
+          $('#continue').show();
+       }
+       else {
+          $('#continue').hide();
+       }
+      });
+      // lobby
+      $('#continue').on("click", function() {
+        $("#username").off('keyup');
+        $('.name').hide();
+        $('.lobby').css({display: "block"});
+        if(role === "host") {
+          createGame();
+        } else {
+          joinGame();
+        }
+      });
+    });
+
+
+
+
+    // create game - this user is the host
+    function createGame() {
+      playerID = 1;
+      role = "host";
+      playerCount ++;
+
+      // TODO: Connect to chromecast
+
+      // listen for new players joing game
+      /*socket.on('new player', function(player){
+        playerCount ++;
+        socket.emit('player id', playerCount);
+        if (playerCount > 1) {
+          $('#start').fadeIn();
+        }
+      });*/
+
+
+
+
+    }
+
+
+    // join game - this user is a player
+    function joinGame() {
+      role = "player";
+
+      // ask host for id
+      /*socket.broadcast.emit('new player', "hello");
+
+      // get id from host
+      socket.on('player id', function(playerCount){
+        playerID = playerCount;
+      });*/
+
+    }
+
+  </script>
   </body>
 </html>
