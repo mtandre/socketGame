@@ -2,7 +2,7 @@
 <html>
   <head>
     <title>Socket Game</title>
-    <!-- <script src="/socket.io/socket.io.js"></script> -->
+    <script src="/socket.io/socket.io.js"></script>
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
     <link href='http://fonts.googleapis.com/css?family=Lato:300,400,700' rel='stylesheet' type='text/css'>
     <style>
@@ -15,6 +15,8 @@
     button.bottom {background: #3498DB; margin: 0 auto;}
     .initial-hide {display:none;}
     input {text-transform:capitalize; margin: 0 0 20px 0; font-size: 2em; outline: none; border: none; width: 200px; color: #2C3E50; text-align: center;}
+    aa, bb, cc, dd {margin:}
+    disabled {color:#ECF0F1;}
     </style>
   </head>
   <body>
@@ -34,23 +36,26 @@
 
         <div class="lobby initial-hide">
           <div class="message">Waiting on more players.<br>Other players: <span id="pc">0</span></div>
-          <button class="top" style="display:none;" id="start">Start Game</button>
+          <button class="top" style="display:none;" id="start">Play</button>
         </div>
-
+        <div class="game initial-hide">
+          <button class="aa disabled">A</button>
+          <button class="bb disabled">B</button>
+          <button class="cc disabled">C</button>
+          <button class="dd disabled">D</button>
+        </div>
       </div>
     </div>
   <script>
     //var socket = io();
 
-    var playerID = 0;
-    var role = "";
+    var player = {id: 0, name: "", role: ""};
     var playerCount = 0;
-
 
     $(document).ready(function(){
       // welcome
       $('.welcome button').on("click", function() {
-        role = $(this).data('route');
+        player.role = $(this).data('route');
         $('.welcome').hide();
         $('.name').css({display: "block"});
       });
@@ -65,15 +70,18 @@
       });
       // lobby
       $('#continue').on("click", function() {
+        player.name = $("#username").val();
         $("#username").off('keyup');
         $('.name').hide();
         $('.lobby').css({display: "block"});
-        if(role === "host") {
+        if(player.role === "host") {
           createGame();
         } else {
           joinGame();
         }
       });
+      // game
+      $('#start').on('click', startGame());
     });
 
 
@@ -81,38 +89,47 @@
 
     // create game - this user is the host
     function createGame() {
-      playerID = 1;
-      role = "host";
+      player.id = 1;
       playerCount ++;
 
       // TODO: Connect to chromecast
 
       // listen for new players joing game
-      /*socket.on('new player', function(player){
+      socket.on('new player', function(playerName){
         playerCount ++;
-        socket.emit('player id', playerCount);
+        $('#pc').text(playerCount);
+
+        // TODO: store playerId and playerName
+
+        socket.broadcast.emit('player id', playerCount);
         if (playerCount > 1) {
           $('#start').fadeIn();
+        } else {
+          $('#start').fadeOut();
         }
-      });*/
 
+      });
+    }
 
-
-
+    function startGame() {
+      $('.title').text('Question ' + questionNum);
+      $('.lobby').hide();
+      $('.game').show();
     }
 
 
     // join game - this user is a player
     function joinGame() {
-      role = "player";
 
       // ask host for id
-      /*socket.broadcast.emit('new player', "hello");
+      socket.broadcast.emit('new player', player.name);
 
       // get id from host
       socket.on('player id', function(playerCount){
-        playerID = playerCount;
-      });*/
+        player.id = playerCount;
+      });
+
+      
 
     }
 
