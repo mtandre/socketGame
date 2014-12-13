@@ -2,7 +2,7 @@
 <html>
   <head>
     <title>Socket Game</title>
-    <!-- <script src="/socket.io/socket.io.js"></script> -->
+    <script src="/socket.io/socket.io.js"></script>
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
     <link href='http://fonts.googleapis.com/css?family=Lato:300,400,700' rel='stylesheet' type='text/css'>
     <style>
@@ -96,16 +96,16 @@
 
       // TODO: Connect to chromecast
 
-      // listen for new players joing game
-      socket.on('new player', function(playerName){
+      // listen for new players joining game
+      socket.on('setup', function(data){
 
         //create new player
-        var newPlayer = {id: playerCount(), name: playerName};
+        var newPlayer = {id: data.id, name: data.name, role: "player"};
         players.push(newPlayer);
         $('#pc').text(playerCount());
 
         // confirm creation
-        socket.broadcast.emit('player id', newPlayer.id;
+        socket.emit('setup complete', {id: newPlayer.id, playerCount: playerCount()});
 
         // can we start?
         if (playerCount() > 1) {
@@ -139,15 +139,20 @@
     // join game - this user is a player
     function joinGame() {
 
-      // ask host for id
-      socket.broadcast.emit('new player', player.name);
+      // generate user id
+      var d = new Date();
+      var t = d.getTime().toString().slice(-7);
+      player.id = t + "-" + player.name;
 
-      // get id from host
-      socket.on('player id', function(playerCount){
-        player.id = playerCount;
+      // send player data
+      socket.emit('setup', player);
+
+      // confirm and update player count 
+      socket.on('setup complete', function(data){
+        if(data.id === player.id) {
+          $('#pc').text(data.playerCount);
+        }
       });
-
-
 
     }
 
