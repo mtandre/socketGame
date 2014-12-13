@@ -13,6 +13,9 @@
           return false;
          });
        });
+       socket.on('chat message', function(msg){
+         $('#messages').append($('<li>').text(msg));
+        });
     </script>
     <style>
       * { margin: 0; padding: 0; box-sizing: border-box; }
