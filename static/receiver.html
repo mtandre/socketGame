@@ -22,7 +22,7 @@ body {background-color:#962D3E; font-family: 'Lato', sans-serif; padding:0; marg
   <script type="text/javascript">
   var namespace = 'urn:x-cast:com.appspot.michael.socketgame';
 
-  window.onload = function() {
+  $(document).ready(function() {
     cast.receiver.logger.setLevelValue(0);
     window.castReceiverManager = cast.receiver.CastReceiverManager.getInstance();
 
@@ -40,7 +40,7 @@ body {background-color:#962D3E; font-family: 'Lato', sans-serif; padding:0; marg
       if (window.castReceiverManager.getSenders().length == 0) {
         window.close();
       }
-    };
+    });
 
     //i do like big butts and i can not lie
     // create a CastMessageBus to handle messages for a custom namespace
@@ -51,7 +51,7 @@ body {background-color:#962D3E; font-family: 'Lato', sans-serif; padding:0; marg
       // display the message from the sender
       $('.debug-a').append('<p>' + JSON.stringify(event); + '</p>');
       $('.debug-b').append('<p>' + JSON.stringify(event.data); + '</p>');
-      processMessage(event.data);
+      //processMessage(event.data);
       // inform all senders on the CastMessageBus of the incoming message event
       // sender message listener will be invoked
       window.messageBus.send(event.senderId, event.data);
@@ -61,6 +61,7 @@ body {background-color:#962D3E; font-family: 'Lato', sans-serif; padding:0; marg
     window.castReceiverManager.start({statusText: "Application is starting"});
   };
 
+  /*
   function processMessage(data) {
     switch (data.action) {
     case 'message':
@@ -83,7 +84,8 @@ body {background-color:#962D3E; font-family: 'Lato', sans-serif; padding:0; marg
       break;
    }
     window.castReceiverManager.setApplicationState(data);
-  };
+  }
+  */
 </script>
 </body>
 </html>
