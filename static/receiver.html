@@ -50,7 +50,7 @@ body {background-color:#962D3E; font-family: 'Lato', sans-serif; padding:0; marg
     window.messageBus.onMessage = function(event) {
       // display the message from the sender
       var dataObj = JSON.parse(event.data);
-      $('.debug-b').append('<p>' + JSON.stringify(dataObj) + '</p>');
+      //$('.debug-b').append('<p>' + JSON.stringify(dataObj) + '</p>');
       processMessage(dataObj);
       // inform all senders on the CastMessageBus of the incoming message event
       // sender message listener will be invoked
@@ -61,7 +61,7 @@ body {background-color:#962D3E; font-family: 'Lato', sans-serif; padding:0; marg
     window.castReceiverManager.start({statusText: "Application is starting"});
   });
 
-  /*
+
   function processMessage(data) {
     switch (data.action) {
     case 'message':
@@ -70,7 +70,7 @@ body {background-color:#962D3E; font-family: 'Lato', sans-serif; padding:0; marg
     case 'players':
       $('#players li').remove();
       $.each(data.msg, function( index, value ) {
-        $('#players').append('<li><span class="num">' + index + '</span>' + value.name + '</li>');
+        $('#players').append('<li><span class="num">' + (index + 1) + '</span>' + value.name + '</li>');
       });
       break;
     case 'timer':
@@ -85,7 +85,7 @@ body {background-color:#962D3E; font-family: 'Lato', sans-serif; padding:0; marg
    }
     window.castReceiverManager.setApplicationState(data);
   }
-  */
+
 </script>
 </body>
 </html>
