@@ -54,17 +54,6 @@
       </div>
     </div>
   <script>
-  var questions = [];
-  questions.push({
-    question: 'What is the worlds longest river?',
-    one: 'Fox River',
-    two: 'Amazon River',
-    three: 'Nile',
-    four: 'Yangtze',
-    answer: 'two'
-  });
-  </script>
-  <script>
     var socket = io();
 
     var player = {id: 0, name: "", role: ""};
@@ -72,12 +61,14 @@
     var playerCount = function() {return players.length};
 
     $(document).ready(function(){
+
       // welcome
       $('.welcome button').on("click", function() {
         player.role = $(this).data('route');
         $('.welcome').hide();
         $('.name').css({display: "block"});
       });
+
       // username
       $("#username").on('keyup',function () {
        if ($(this).val()) {
@@ -87,6 +78,7 @@
           $('#continue').hide();
        }
       });
+
       // lobby
       $('#continue').on("click", function() {
         player.name = $("#username").val();
@@ -100,8 +92,10 @@
           joinGame();
         }
       });
+
       // game
       $('#start').on('click', startGame());
+
     });
 
 
@@ -115,7 +109,7 @@
       players.push(player);
 
       // TODO: Connect to chromecast
-      sendMessage('Starting game...');
+      cast('Waiting for players');
 
       // listen for new players joining game
       socket.on('setup', function(data){
@@ -140,25 +134,17 @@
     function startGame() {
       $('.lobby').hide();
       $('.loading').show();
-      var counter = 10;
-      var timer = setInterval(function() {
-        counter--;
-        if(counter <= 0) {
-          $('#countDown').text("ready");
-          clearInterval(timer);
-          playGame();
-        } else {
-          $('#countDown').text(counter);
-        }
-      }, 1000);
+      cast('Starting game');
     }
 
     function playGame() {
 
+      /*
       for(var i = 0; i < 10; i++) {
         $('.title').text('Question ' + i);
 
       }
+      */
 
     }
 
@@ -182,7 +168,7 @@
       });
 
     }
-
   </script>
+  <script src="/questions.js"></script>
   </body>
 </html>

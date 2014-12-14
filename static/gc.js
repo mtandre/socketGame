@@ -1,5 +1,5 @@
 var applicationID = '2AF6556D';
-var namespace = 'urn:x-cast:com.appspot.michael.helloworld';
+var namespace = 'urn:x-cast:com.appspot.michael.socketgame';
 var session = null;
 
 // Call initialization for Cast
@@ -61,7 +61,7 @@ function stopApp() { session.stop(onStopAppSuccess, onError); }
 
 // send a message to the receiver using the custom namespace
 // receiver CastMessageBus message handler will be invoked
-function sendMessage(message) {
+function cast(message) {
   if (session!=null) {
     session.sendMessage(namespace, message, onSuccess.bind(this, "Message sent: " + message), onError);
   }
