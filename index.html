@@ -4,6 +4,8 @@
     <title>Socket Game</title>
     <script src="/socket.io/socket.io.js"></script>
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+    <script src="https://www.gstatic.com/cv/js/sender/v1/cast_sender.js"></script>
+    <script src="/gc.js"></script>
     <link href='http://fonts.googleapis.com/css?family=Lato:300,400,700' rel='stylesheet' type='text/css'>
     <style>
     html, body {margin:10px 0 0 0; padding:0; background:#2C3E50; color:#ECF0F1; font-family: 'Lato', sans-serif;}
@@ -15,8 +17,8 @@
     button.bottom {background: #3498DB; margin: 0 auto;}
     .initial-hide {display:none;}
     input {text-transform:capitalize; margin: 0 0 20px 0; font-size: 2em; outline: none; border: none; width: 200px; color: #2C3E50; text-align: center;}
-    aa, bb, cc, dd {margin:10px 0;}
-    disabled {background-color: #ECF0F1;}
+    .aa, .bb, .cc, .dd {margin:10px 0;}
+    .disabled {background-color: #ECF0F1;}
     </style>
   </head>
   <body>
@@ -38,6 +40,11 @@
           <div class="message">Waiting on more players.<br>Other players: <span id="pc">0</span></div>
           <button class="top" style="display:none;" id="start">Play</button>
         </div>
+
+        <div class="loading initial-hide">
+          <div id="countDown"></div>
+        </div>
+
         <div class="game initial-hide">
           <button class="aa disabled">A</button>
           <button class="bb disabled">B</button>
@@ -46,6 +53,17 @@
         </div>
       </div>
     </div>
+  <script>
+  var questions = [];
+  questions.push({
+    question: 'What is the worlds longest river?',
+    one: 'Fox River',
+    two: 'Amazon River',
+    three: 'Nile',
+    four: 'Yangtze',
+    answer: 'two'
+  });
+  </script>
   <script>
     var socket = io();
 
@@ -87,14 +105,17 @@
     });
 
 
-
-
     // create game - this user is the host
     function createGame() {
-      player.id = 0;
+
+      // generate user id
+      var d = new Date();
+      var t = d.getTime().toString().slice(-7);
+      player.id = t + "-" + player.name;
       players.push(player);
 
       // TODO: Connect to chromecast
+      sendMessage('Starting game...');
 
       // listen for new players joining game
       socket.on('setup', function(data){
@@ -102,7 +123,7 @@
         //create new player
         var newPlayer = {id: data.id, name: data.name, role: "player"};
         players.push(newPlayer);
-        $('#pc').text(playerCount());
+        $('#pc').text(playerCount() - 1);
 
         // confirm creation
         socket.emit('setup complete', {id: newPlayer.id, playerCount: playerCount()});
@@ -118,13 +139,18 @@
 
     function startGame() {
       $('.lobby').hide();
-      $('.game').show();
-      playGame();
-    }
-    function replayGame() {
-      // TODO: transition screens
-
-      playGame();
+      $('.loading').show();
+      var counter = 10;
+      var timer = setInterval(function() {
+        counter--;
+        if(counter <= 0) {
+          $('#countDown').text("ready");
+          clearInterval(timer);
+          playGame();
+        } else {
+          $('#countDown').text(counter);
+        }
+      }, 1000);
     }
 
     function playGame() {
@@ -133,6 +159,7 @@
         $('.title').text('Question ' + i);
 
       }
+
     }
 
 
@@ -147,10 +174,10 @@
       // send player data
       socket.emit('setup', player);
 
-      // confirm and update player count 
+      // confirm and update player count
       socket.on('setup complete', function(data){
         if(data.id === player.id) {
-          $('#pc').text(data.playerCount);
+          $('#pc').text(data.playerCount - 1);
         }
       });
 

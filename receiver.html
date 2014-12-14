@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+<link href='http://fonts.googleapis.com/css?family=Lato:400,700,700italic' rel='stylesheet' type='text/css'>
+<style type="text/css">
+body {background-color:#962D3E; font-family: 'Lato', sans-serif; padding:0; margin:0; font-size:5em;}
+#message {color:#fff; margin:5em; width:100%; height:100%;}
+</style>
+<title>Cast Socket Game</title>
+</head>
+<body>
+  <div id="message">Ready...</div>
+  <script type="text/javascript" src="//www.gstatic.com/cast/sdk/libs/receiver/2.0.0/cast_receiver.js"></script>
+  <script type="text/javascript">
+  var namespace = 'urn:x-cast:com.appspot.michael.helloworld';
+
+  window.onload = function() {
+    cast.receiver.logger.setLevelValue(0);
+    window.castReceiverManager = cast.receiver.CastReceiverManager.getInstance();
+
+    // handler for the 'ready' event
+    castReceiverManager.onReady = function(event) {
+      window.castReceiverManager.setApplicationState("Application status is ready...");
+    };
+
+    // handler for 'senderconnected' event
+    castReceiverManager.onSenderConnected = function(event) {
+    };
+
+    // handler for 'senderdisconnected' event
+    castReceiverManager.onSenderDisconnected = function(event) {
+      if (window.castReceiverManager.getSenders().length == 0) {
+        window.close();
+      }
+    };
+
+    //i do like big butts and i can not lie
+    // create a CastMessageBus to handle messages for a custom namespace
+    window.messageBus = window.castReceiverManager.getCastMessageBus(namespace);
+
+    // handler for the CastMessageBus message event
+    window.messageBus.onMessage = function(event) {
+      // display the message from the sender
+      displayText(event.data);
+      // inform all senders on the CastMessageBus of the incoming message event
+      // sender message listener will be invoked
+      window.messageBus.send(event.senderId, event.data);
+    }
+
+    // initialize the CastReceiverManager with an application status message
+    window.castReceiverManager.start({statusText: "Application is starting"});
+  };
+
+  // utility function to display the text message in the input field
+  function displayText(text) {
+    document.getElementById("message").innerHTML=text;
+    window.castReceiverManager.setApplicationState(text);
+  };
+</script>
+</body>
+</html>
