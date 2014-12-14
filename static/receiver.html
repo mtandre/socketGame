@@ -49,9 +49,9 @@ body {background-color:#962D3E; font-family: 'Lato', sans-serif; padding:0; marg
     // handler for the CastMessageBus message event
     window.messageBus.onMessage = function(event) {
       // display the message from the sender
-      $('.debug-a').append('<p>' + JSON.stringify(event); + '</p>');
-      $('.debug-b').append('<p>' + JSON.stringify(event.data); + '</p>');
-      //processMessage(event.data);
+      var dataObj = JSON.parse(event.data);
+      $('.debug-b').append('<p>' + JSON.stringify(dataObj) + '</p>');
+      processMessage(dataObj);
       // inform all senders on the CastMessageBus of the incoming message event
       // sender message listener will be invoked
       window.messageBus.send(event.senderId, event.data);
