@@ -6,6 +6,8 @@ app.get('/', function(req, res) {
   res.sendFile(__dirname + '/index.html');
 });
 
+app.use(express.static(__dirname + '/static'));
+
 io.on('connection', function(socket) {
   console.log('new user');
   socket.on('setup', function(data) {
