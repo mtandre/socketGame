@@ -1,4 +1,4 @@
-var applicationID = 'D49A6F8D';
+var applicationID = '2AF6556D';
 var namespace = 'urn:x-cast:com.appspot.michael.helloworld';
 var session = null;
 
