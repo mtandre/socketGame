@@ -109,7 +109,7 @@
       players.push(player);
 
       // TODO: Connect to chromecast
-      //castMessage('Waiting for players');
+      castMessage({action: 'message', msg: 'Waiting for players'});
 
       // listen for new players joining game
       socket.on('setup', function(data){
@@ -121,6 +121,10 @@
 
         // confirm creation
         socket.emit('setup complete', {id: newPlayer.id, playerCount: playerCount()});
+
+        //update chromecast
+        castMessage({action: 'players', msg: players});
+
 
         // can we start?
         if (playerCount() > 1) {

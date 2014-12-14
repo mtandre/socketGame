@@ -1,16 +1,22 @@
 <!DOCTYPE html>
 <html>
 <head>
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script src="http://www.gstatic.com/cast/sdk/libs/receiver/2.0.0/cast_receiver.js"></script>
 <link href='http://fonts.googleapis.com/css?family=Lato:400,700,700italic' rel='stylesheet' type='text/css'>
 <style type="text/css">
-body {background-color:#962D3E; font-family: 'Lato', sans-serif; padding:0; margin:0; font-size:5em;}
-#message {color:#fff; margin:2em; width:100%; height:100%;}
+body {background-color:#962D3E; font-family: 'Lato', sans-serif; padding:0; margin:4em 4em 0 4em; color:#fff;}
+#message {font-size:5em;}
+#players {font-size:2em; margin:0.5em 0 0; padding:0; list-style:none;}
+#players li { background:#bc5666; margin: 0 0 0.5em 0; padding:0.5em; }
+.num {border-right: 0.25em solid #962D3E; margin-right: 0.5em; padding: 0.5em 1em 0.5em 0.5em;}
 </style>
 <title>Cast Socket Game</title>
 </head>
 <body>
   <div id="message">Ready...</div>
-  <script type="text/javascript" src="//www.gstatic.com/cast/sdk/libs/receiver/2.0.0/cast_receiver.js"></script>
+  <ul id="players">
+  </ul>
   <script type="text/javascript">
   var namespace = 'urn:x-cast:com.appspot.michael.socketgame';
 
@@ -41,7 +47,7 @@ body {background-color:#962D3E; font-family: 'Lato', sans-serif; padding:0; marg
     // handler for the CastMessageBus message event
     window.messageBus.onMessage = function(event) {
       // display the message from the sender
-      displayText(event.data);
+      processMessage(event.data);
       // inform all senders on the CastMessageBus of the incoming message event
       // sender message listener will be invoked
       window.messageBus.send(event.senderId, event.data);
@@ -51,10 +57,28 @@ body {background-color:#962D3E; font-family: 'Lato', sans-serif; padding:0; marg
     window.castReceiverManager.start({statusText: "Application is starting"});
   };
 
-  // utility function to display the text message in the input field
-  function displayText(text) {
-    document.getElementById("message").innerHTML=text;
-    window.castReceiverManager.setApplicationState(text);
+  function processMessage(data) {
+    switch (data.action) {
+    case 'message':
+      $('#message').text(data.msg);
+      break;
+    case 'players':
+      $('#players li').remove();
+      $.each(data.msg, function( index, value ) {
+        $('#players').append('<li><span class="num">' + index + '</span>' + value.name + '</li>');
+      });
+      break;
+    case 'timer':
+      $('#message').text(data.msg);
+      break;
+    case'question':
+      $('#message').text(data.msg);
+      break;
+    case 'answer':
+      $('#message').text(data.msg);
+      break;
+   }
+    window.castReceiverManager.setApplicationState(data);
   };
 </script>
 </body>
