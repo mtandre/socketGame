@@ -61,7 +61,7 @@ function stopApp() { session.stop(onStopAppSuccess, onError); }
 
 // send a message to the receiver using the custom namespace
 // receiver CastMessageBus message handler will be invoked
-function cast(message) {
+function castMessage(message) {
   if (session!=null) {
     session.sendMessage(namespace, message, onSuccess.bind(this, "Message sent: " + message), onError);
   }

@@ -109,7 +109,7 @@
       players.push(player);
 
       // TODO: Connect to chromecast
-      cast('Waiting for players');
+      castMessage('Waiting for players');
 
       // listen for new players joining game
       socket.on('setup', function(data){
@@ -134,7 +134,7 @@
     function startGame() {
       $('.lobby').hide();
       $('.loading').show();
-      cast('Starting game');
+      castMessage('Starting game');
     }
 
     function playGame() {
