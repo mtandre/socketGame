@@ -40,7 +40,7 @@ body {background-color:#962D3E; font-family: 'Lato', sans-serif; padding:0; marg
       if (window.castReceiverManager.getSenders().length == 0) {
         window.close();
       }
-    });
+    };
 
     //i do like big butts and i can not lie
     // create a CastMessageBus to handle messages for a custom namespace
@@ -59,7 +59,7 @@ body {background-color:#962D3E; font-family: 'Lato', sans-serif; padding:0; marg
 
     // initialize the CastReceiverManager with an application status message
     window.castReceiverManager.start({statusText: "Application is starting"});
-  };
+  });
 
   /*
   function processMessage(data) {
