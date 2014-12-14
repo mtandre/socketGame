@@ -24,3 +24,4 @@ stop nginx on mtandre.com
 #!shell
 sudo service stop nginx
 ```
+[[source]](https://www.digitalocean.com/community/tutorials/how-to-set-up-a-node-js-application-for-production-on-ubuntu-14-04)
