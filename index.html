@@ -17,8 +17,13 @@
     button.bottom {background: #3498DB; margin: 0 auto;}
     .initial-hide {display:none;}
     input {text-transform:capitalize; margin: 0 0 20px 0; font-size: 2em; outline: none; border: none; width: 200px; color: #2C3E50; text-align: center;}
-    .aa, .bb, .cc, .dd {margin:10px 0;}
-    .disabled {background-color: #ECF0F1;}
+    .game {text-align: center;}
+    .aa, .bb, .cc, .dd {margin:20px 0; width: 100%;}
+    .aa {background: #3498DB;}
+    .bb {background: #2ECC71;}
+    .cc {background: #E74C3C;}
+    .dd {background: #F1C40F;}
+    .disabled {background-color: #ECF0F1; color:#fff;}
     </style>
   </head>
   <body>
@@ -41,16 +46,13 @@
           <button class="top" style="display:none;" id="start">Play</button>
         </div>
 
-        <div class="loading initial-hide">
-          <div id="countDown"></div>
+        <div class="game initial-hide">
+          <button class="aa disabled" data-ans="one">A</button>
+          <button class="bb disabled" data-ans="two">B</button>
+          <button class="cc disabled" data-ans="three">C</button>
+          <button class="dd disabled" data-ans="four">D</button>
         </div>
 
-        <div class="game initial-hide">
-          <button class="aa disabled">A</button>
-          <button class="bb disabled">B</button>
-          <button class="cc disabled">C</button>
-          <button class="dd disabled">D</button>
-        </div>
       </div>
     </div>
   <script>
@@ -59,6 +61,8 @@
     var player = {id: 0, name: "", role: ""};
     var players = [];
     var playerCount = function() {return players.length};
+    var status, answered;
+    var answerQueue = [];
 
     $(document).ready(function(){
 
@@ -125,7 +129,6 @@
         //update chromecast
         castMessage({action: 'players', msg: players});
 
-
         // can we start?
         if (playerCount() > 1) {
           $('#start').fadeIn();
@@ -133,25 +136,47 @@
           $('#start').fadeOut();
         }
       });
+
+      socket.on ('question answer', function(data) {
+        answerQueue.push(data);
+      });
     }
 
     function startGame() {
       $('.lobby').hide();
-      $('.loading').show();
-      //castMessage('Starting game');
-    }
-
-    function playGame() {
-
-      /*
-      for(var i = 0; i < 10; i++) {
-        $('.title').text('Question ' + i);
-
+      $('.game').show();
+      if (player.role === 'host') {
+        socket.emit('start game', 'go');
+        castMessage({action: 'timer', msg: 'Starting game'});
+        var counter = 11;
+        var timer = setInterval(function() {
+          counter--;
+          if(counter <= 1) {
+            clearInterval(timer);
+            playGame();
+          } else {
+            var msg = 'Starting game in ' + counter;
+            castMessage({action: 'timer', msg: msg});
+          }
+        }, 1000);
       }
-      */
+      socket.on('game question', function(data){
+        castMessage({action:'question', msg: 'Question ' + data.questionNumber, question: data.question, });
+        showQuestion(data);
+      });
+    }
+
+    function playGame(data) {
+
+      var question = questions[i];
+      socket.emit('game question', question);
 
     }
 
+    function showQuestion(data) {
+      $('.title').text('Question ' + data.questionNumber);
+      enableButtons();
+    }
 
     // join game - this user is a player
     function joinGame() {
@@ -167,11 +192,38 @@
       // confirm and update player count
       socket.on('setup complete', function(data){
         if(data.id === player.id) {
+          status = 'connected';
+          $('#pc').text(data.playerCount - 1);
+        } else {
           $('#pc').text(data.playerCount - 1);
         }
       });
 
+      // listen for game start
+      socket.on('start game', function() {
+        startGame();
+      });
     }
+
+    function enableButtons() {
+      answered = false;
+      $('.game button').removeClass('disabled');
+      // listen for answer
+      $('.game button').on('click', function(){
+        if (!answered) { // only allow user to answer once
+          var ans = $(this).data('ans');
+          // send answer
+          socket.emit('question answer', {id: player.id, answer: ans});
+          answered = true;
+          disableButtons();
+        }
+      });
+    }
+    function disableButtons() {
+      $('.game button').addClass('disabled');
+      $('.game button').off('click');
+    }
+
   </script>
   <script src="/questions.js"></script>
   </body>

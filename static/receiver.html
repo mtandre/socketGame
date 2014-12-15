@@ -7,18 +7,16 @@
 <style type="text/css">
 body {background-color:#962D3E; font-family: 'Lato', sans-serif; padding:0; margin:4em 4em 0 4em; color:#fff;}
 #message {font-size:5em;}
-#players {font-size:2em; margin:0.5em 0 0; padding:0; list-style:none;}
-#players li { background:#bc5666; margin: 0 0 0.5em 0; padding:0.5em; }
-.num {border-right: 0.25em solid #962D3E; margin-right: 0.5em; padding: 0.5em 1em 0.5em 0.5em;}
+#list {font-size:2em; margin:0.5em 0 0; padding:0; list-style:none;}
+#list li { background:#bc5666; margin: 0 0 0.5em 0; padding:0.5em; }
+.item {border-right: 0.25em solid #962D3E; margin-right: 0.5em; padding: 0.5em 1em 0.5em 0.5em;}
 </style>
 <title>Cast Socket Game</title>
 </head>
 <body>
   <div id="message">Ready...</div>
-  <ul id="players">
+  <ul id="list">
   </ul>
-  <div class="debug-a"></div>
-  <div class="debug-b"></div>
   <script type="text/javascript">
   var namespace = 'urn:x-cast:com.appspot.michael.socketgame';
 
@@ -50,7 +48,6 @@ body {background-color:#962D3E; font-family: 'Lato', sans-serif; padding:0; marg
     window.messageBus.onMessage = function(event) {
       // display the message from the sender
       var dataObj = JSON.parse(event.data);
-      //$('.debug-b').append('<p>' + JSON.stringify(dataObj) + '</p>');
       processMessage(dataObj);
       // inform all senders on the CastMessageBus of the incoming message event
       // sender message listener will be invoked
@@ -64,25 +61,30 @@ body {background-color:#962D3E; font-family: 'Lato', sans-serif; padding:0; marg
 
   function processMessage(data) {
     switch (data.action) {
-    case 'message':
-      $('#message').text(data.msg);
-      break;
-    case 'players':
-      $('#players li').remove();
-      $.each(data.msg, function( index, value ) {
-        $('#players').append('<li><span class="num">' + (index + 1) + '</span>' + value.name + '</li>');
-      });
-      break;
-    case 'timer':
-      $('#message').text(data.msg);
-      break;
-    case'question':
-      $('#message').text(data.msg);
-      break;
-    case 'answer':
-      $('#message').text(data.msg);
-      break;
-   }
+      case 'message':
+        $('#message').text(data.msg);
+        break;
+      case 'players':
+        $('#list').remove();
+        $.each(data.msg, function( index, value ) {
+          $('#list').append('<li><span class="item">' + (index + 1) + '</span>' + value.name + '</li>');
+        });
+        break;
+      case 'timer':
+        $('#message').text(data.msg);
+        break;
+      case'question':
+        $('#message').text(data.msg);
+        $('#list').remove();
+        $.each(data.questions., function( index, value ) {
+          var leters = ["A","B","C","D"];
+          $('#list').append('<li data-ans="'+ value.ans +'"><span class="item">' + letters[index] + '</span>' + value.answer + '</li>');
+        });
+        break;
+      case 'answer':
+        $('#message').text(data.msg);
+        break;
+    }
     window.castReceiverManager.setApplicationState(data);
   }
 
